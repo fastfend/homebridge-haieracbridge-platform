@@ -164,27 +164,42 @@ class StateManager {
   }
 
   setTargetHeatingCoolingState(value) {
-    // if (this.data.targetMode != "DRY" && this.data.targetMode != "FAN") {
-    switch (value) {
-      case Characteristic.TargetHeatingCoolingState.OFF:
-        this.data.powerState = false;
-        break;
-      case Characteristic.TargetHeatingCoolingState.COOL:
-        this.data.powerState = true;
-        this.data.targetMode = "COOL";
-        break;
-      case Characteristic.TargetHeatingCoolingState.HEAT:
-        this.data.powerState = true;
-        this.data.targetMode = "HEAT";
-        break;
-      case Characteristic.TargetHeatingCoolingState.AUTO:
-        this.data.powerState = true;
-        this.data.targetMode = "SMART";
-        break;
-    }
-    // }
+    if (!this.targetHeatingCoolingLock) {
+      switch (value) {
+        case Characteristic.TargetHeatingCoolingState.OFF:
+          if (this.data.powerState == true) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = false;
+          break;
+        case Characteristic.TargetHeatingCoolingState.COOL:
+          if (this.data.powerState == false) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = true;
+          this.data.targetMode = "COOL";
+          break;
+        case Characteristic.TargetHeatingCoolingState.HEAT:
+          if (this.data.powerState == false) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = true;
+          this.data.targetMode = "HEAT";
+          break;
+        case Characteristic.TargetHeatingCoolingState.AUTO:
+          if (this.data.powerState == false) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = true;
+          this.data.targetMode = "SMART";
+          break;
+      }
 
-    this.updateValues("setTargetHeatingCoolingState");
+      this.updateValues("setTargetHeatingCoolingState");
+    } else {
+      this.targetHeatingCoolingLock = false;
+      this.log.debug("Unlocked TargetHeatingCoolingState setter");
+    }
   }
 
   getCurrentTemperature() {
@@ -219,23 +234,32 @@ class StateManager {
   }
 
   setTargetFanState(value) {
-    let powerState = this.data.powerState;
-    let targetMode = this.data.targetMode;
+    if (!this.targetFanLock) {
+      let powerState = this.data.powerState;
+      let targetMode = this.data.targetMode;
 
-    if (targetMode == "FAN") {
-      this.updateValues("setTargetFanState");
-      return;
-    } else {
-      if (value) {
-        if (!powerState) {
-          this.data.powerState = true;
-        }
-        this.data.lastFanSpeed = this.data.fanSpeed;
-        this.data.fanSpeed = "AUTO";
+      if (targetMode == "FAN") {
+        this.updateValues("setTargetFanState");
+        return;
       } else {
-        this.data.fanSpeed = this.data.lastFanSpeed;
+        if (value) {
+          if (!powerState) {
+            this.data.powerState = true;
+          }
+          this.data.lastFanSpeed = this.data.fanSpeed;
+          this.data.fanSpeed = "AUTO";
+        } else {
+          if (this.data.lastFanSpeed == "AUTO") {
+            this.data.fanSpeed = "MID";
+          } else {
+            this.data.fanSpeed = this.data.lastFanSpeed;
+          }
+        }
+        this.updateValues("setTargetFanState");
       }
-      this.updateValues("setTargetFanState");
+    } else {
+      this.targetFanLock = false;
+      this.log.debug("Unlocked targetFanState setter");
     }
   }
 
@@ -372,6 +396,8 @@ class StateManager {
       this.data.powerState = true;
       this.data.lastTargetMode = this.data.targetMode;
       this.data.targetMode = "DRY";
+      this.targetHeatingCoolingLock = true;
+      this.targetFanLock = true;
     } else {
       this.data.targetMode = this.data.lastTargetMode;
       if (!this.data.lastPowerState) {

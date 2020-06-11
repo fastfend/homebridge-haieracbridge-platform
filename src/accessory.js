@@ -124,10 +124,16 @@ class HaierAccessory {
       .setCharacteristic(Characteristic.Manufacturer, "Haier")
       .setCharacteristic(Characteristic.Model, "HaierAC")
       .setCharacteristic(Characteristic.SerialNumber, this.context.data.id);
+  }
 
-    accessory.on("identify", () => {
-      this.log("Siema to ja!");
-    });
+  unlockUpdates() {
+    setTimeout(() => {
+      this.lock = false;
+    }, 5000);
+  }
+
+  lockUpdates() {
+    this.lock = true;
   }
 
   getAccessory() {
@@ -137,19 +143,12 @@ class HaierAccessory {
   setupDryModeService(service) {
     service
       .getCharacteristic(Characteristic.On)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getDryMode());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setDryMode(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
   }
@@ -157,19 +156,12 @@ class HaierAccessory {
   setupHealthService(service) {
     service
       .getCharacteristic(Characteristic.On)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getHealthMode());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setHealthMode(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
   }
@@ -177,19 +169,12 @@ class HaierAccessory {
   setupSwingRightLeftService(service) {
     service
       .getCharacteristic(Characteristic.On)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getSwingRightLeft());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setSwingRightLeft(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
   }
@@ -197,19 +182,12 @@ class HaierAccessory {
   setupSwingUpDownService(service) {
     service
       .getCharacteristic(Characteristic.On)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getSwingUpDown());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setSwingUpDown(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
   }
@@ -218,41 +196,22 @@ class HaierAccessory {
   setupACService(service) {
     service
       .getCharacteristic(Characteristic.CurrentHeatingCoolingState)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getCurrentHeatingCoolingState());
-        } else {
-          callback("Device Offline", 0);
-        }
-      });
+      .updateValue(this.stateManager.getCurrentHeatingCoolingState());
 
     service
       .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getTargetHeatingCoolingState());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setTargetHeatingCoolingState(value); //Add no change protection
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
 
     service
       .getCharacteristic(Characteristic.CurrentTemperature)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getCurrentTemperature());
-        } else {
-          callback("Device Offline", 0);
-        }
-      });
+      .updateValue(this.stateManager.getCurrentTemperature());
 
     service
       .getCharacteristic(Characteristic.TargetTemperature)
@@ -261,31 +220,18 @@ class HaierAccessory {
         maxValue: 30,
         minStep: 1,
       })
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getTargetTemperature());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setTargetTemperature(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
 
     service
       .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getCurrentRelativeHumidity());
-        } else {
-          callback("Device Offline", 0);
-        }
-      });
+      .updateValue(this.stateManager.getCurrentRelativeHumidity());
   }
 
   setupFanService(service) {
@@ -296,55 +242,34 @@ class HaierAccessory {
         maxValue: 100,
         minStep: 33.333,
       })
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getRotationSpeed());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setRotationSpeed(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
 
     service
       .getCharacteristic(Characteristic.TargetFanState)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getTargetFanState());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setTargetFanState(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
 
     service
       .getCharacteristic(Characteristic.Active)
-      .on("get", (callback) => {
-        if (this.stateManager.getIsOnline()) {
-          callback(null, this.stateManager.getTargetFanState());
-        } else {
-          callback("Device Offline", 0);
-        }
-      })
       .on("set", (value, callback) => {
-        this.lock = true;
+        this.lockUpdates();
         this.stateManager.setActive(value);
         this.stateManager.updateDevice(() => {
           callback();
-          this.lock = false;
+          this.unlockUpdates();
         });
       });
   }
