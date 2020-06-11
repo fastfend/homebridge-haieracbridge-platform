@@ -1,0 +1,18 @@
+{
+  "name": "homebridge-haieracbridge-platform",
+  "version": "0.1.0",
+  "description": "Homebridge plugin for Haier AC (SmartAir2 controlled)",
+  "main": "index.js",
+  "scripts": {
+    "test": "set DEBUG=* && homebridge -U .\\.homebridge\\ -D -P ..\\"
+  },
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "homebridge": ">=0.4.0",
+    "node": ">=10.0.0"
+  },
+  "author": "Piotr Stadnicki",
+  "license": "MIT"
+}
