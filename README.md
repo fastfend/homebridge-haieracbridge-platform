@@ -110,3 +110,7 @@ When `healthModeType` is set to `FORCE`, every time some action is being made pl
 ### After setting new language values in config HomeKit don't show changes
 
 Make sure you set desired language values BEFORE starting plugin for the first time or BEFORE adding new device in SmartAir2.
+
+## 100% working Haier AC models
+
+- AS25S2SF1FA-BC
