@@ -219,8 +219,6 @@ HaierACBridge.prototype = {
     return new Promise((resolve) => {
       this.acApi.getDevices((result, data) => {
         if (result == "OK") {
-          data = [data[4]];
-          //data = [];
           this.addNonExistingDevices(data);
           this.removeNonExistingDevices(data);
         } else {
