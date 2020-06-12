@@ -138,20 +138,24 @@ class StateManager {
 
     //SWING RL
     if (valueName != "setSwingRightLeft") {
-      this.services.swingRightLeftService
-        .getCharacteristic(Characteristic.On)
-        .updateValue(
-          isOnline ? this.getSwingRightLeft() : new Error("Device offline")
-        );
+      if (this.platform.config.swingType == "INDIVIDUAL") {
+        this.services.swingRightLeftService
+          .getCharacteristic(Characteristic.On)
+          .updateValue(
+            isOnline ? this.getSwingRightLeft() : new Error("Device offline")
+          );
+      }
     }
 
     //SWING UD
     if (valueName != "setSwingUpDown") {
-      this.services.swingUpDownService
-        .getCharacteristic(Characteristic.On)
-        .updateValue(
-          isOnline ? this.getSwingUpDown() : new Error("Device offline")
-        );
+      if (this.platform.config.swingType == "INDIVIDUAL") {
+        this.services.swingUpDownService
+          .getCharacteristic(Characteristic.On)
+          .updateValue(
+            isOnline ? this.getSwingUpDown() : new Error("Device offline")
+          );
+      }
     }
 
     //DRYMODE

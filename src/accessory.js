@@ -11,16 +11,20 @@ class HaierAccessory {
     this.log = platform.log;
     this.api = platform.api;
 
-    this.stateManager = new StateManager(platform, accessory, this);
-
     this.lock = false;
 
     this.accessory = accessory;
     this.context = this.accessory.context;
-    if (device != undefined || device != null) {
+    if (typeof device == "object") {
       this.context.data = {
         id: device.id,
         name: device.name,
+        base_name: this.platform.config.lang.acdevice_name,
+        base_fan: this.platform.config.lang.acdevice_fan,
+        base_fan_rl: this.platform.config.lang.acdevice_fan_rightleft,
+        base_fan_ud: this.platform.config.lang.acdevice_fan_updown,
+        base_healthmode: this.platform.config.lang.acdevice_healthmode,
+        base_drymode: this.platform.config.lang.acdevice_drymode,
         powerState: false,
         lastPowerState: false,
         fanSpeed: "HIGH",
@@ -36,12 +40,14 @@ class HaierAccessory {
       };
     }
 
+    this.stateManager = new StateManager(platform, accessory, this);
+
     //AC
     this.acService = accessory.getService(Service.Thermostat);
     if (!this.acService) {
       this.acService = accessory.addService(
         Service.Thermostat,
-        this.platform.config.lang.acdevice_name
+        this.context.data.base_name
       );
     }
     this.setupACService(this.acService);
@@ -51,7 +57,7 @@ class HaierAccessory {
     if (!this.fanService) {
       this.fanService = accessory.addService(
         Service.Fanv2,
-        this.platform.config.lang.acdevice_fan
+        this.context.data.base_fan
       );
     }
     this.setupFanService(this.fanService);
@@ -59,35 +65,35 @@ class HaierAccessory {
     if (this.platform.config.swingType == "INDIVIDUAL") {
       //FANLEFTRIGHT
       this.swingRightLeftService = accessory.getService(
-        this.platform.config.lang.acdevice_fan_rightleft
+        this.context.data.base_fan_rl
       );
       if (!this.swingRightLeftService) {
         this.swingRightLeftService = accessory.addService(
           Service.Switch,
-          this.platform.config.lang.acdevice_fan_rightleft,
-          "LR"
+          this.context.data.base_fan_rl,
+          "RL"
         );
       }
       this.setupSwingRightLeftService(this.swingRightLeftService);
 
       //FANUPDOWN
       this.swingUpDownService = accessory.getService(
-        this.platform.config.lang.acdevice_fan_updown
+        this.context.data.base_fan_ud
       );
       if (!this.swingUpDownService) {
         this.swingUpDownService = accessory.addService(
           Service.Switch,
-          this.platform.config.lang.acdevice_fan_updown,
+          this.context.data.base_fan_ud,
           "UD"
         );
       }
       this.setupSwingUpDownService(this.swingUpDownService);
     } else {
       this.swingRightLeftService = accessory.getService(
-        this.platform.config.lang.acdevice_fan_rightleft
+        this.context.data.base_fan_rl
       );
       this.swingUpDownService = accessory.getService(
-        this.platform.config.lang.acdevice_fan_updown
+        this.context.data.base_fan_ud
       );
 
       if (this.swingRightLeftService) {
@@ -102,19 +108,19 @@ class HaierAccessory {
     //HEALTH
     if (this.platform.config.healthModeType == "SHOW") {
       this.healthService = accessory.getService(
-        this.platform.config.lang.acdevice_healthmode
+        this.context.data.base_healthmode
       );
       if (!this.healthService) {
         this.healthService = accessory.addService(
           Service.Switch,
-          this.platform.config.lang.acdevice_healthmode,
+          this.context.data.base_healthmode,
           "H"
         );
       }
       this.setupHealthService(this.healthService);
     } else {
       this.healthService = accessory.getService(
-        this.platform.config.lang.acdevice_healthmode
+        this.context.data.base_healthmode
       );
       if (this.healthService) {
         accessory.removeService(this.healthService);
@@ -124,19 +130,19 @@ class HaierAccessory {
     //DRYMODE
     if (this.platform.config.useDryMode) {
       this.dryModeService = accessory.getService(
-        this.platform.config.lang.acdevice_drymode
+        this.context.data.base_drymode
       );
       if (!this.dryModeService) {
         this.dryModeService = accessory.addService(
           Service.Switch,
-          this.platform.config.lang.acdevice_drymode,
+          this.context.data.base_drymode,
           "D"
         );
       }
       this.setupDryModeService(this.dryModeService);
     } else {
       this.dryModeService = accessory.getService(
-        this.platform.config.lang.acdevice_drymode
+        this.context.data.base_drymode
       );
       if (this.dryModeService) {
         accessory.removeService(this.dryModeService);
@@ -150,19 +156,23 @@ class HaierAccessory {
     if (!this.informationService) {
       this.informationService = accessory.addService(
         Service.AccessoryInformation,
-        this.platform.config.lang.acdevice_name + " " + this.context.data.name
+        this.context.data.base_name + " " + this.context.data.name
       );
     }
     this.informationService
       .setCharacteristic(Characteristic.Manufacturer, "Haier")
       .setCharacteristic(Characteristic.Model, "HaierAC")
-      .setCharacteristic(Characteristic.SerialNumber, this.context.data.id);
+      .setCharacteristic(Characteristic.SerialNumber, this.context.data.id)
+      .setCharacteristic(
+        Characteristic.Name,
+        this.context.data.base_name + " " + this.context.data.name
+      );
   }
 
   unlockUpdates() {
     setTimeout(() => {
       this.lock = false;
-    }, 5000);
+    }, 2000);
   }
 
   lockUpdates() {

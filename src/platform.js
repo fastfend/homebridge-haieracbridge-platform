@@ -1,5 +1,3 @@
-"use strict";
-
 const pluginName = "homebridge-haieracbridge-platform";
 const platformName = "HaierACBridge";
 
@@ -43,6 +41,86 @@ function HaierACBridge(log, config, api) {
   ) {
     throw new Error("You must provide token from HaierACBridge Android app");
   }
+
+  if (
+    this.config.polling == undefined ||
+    this.config.polling == null ||
+    this.config.polling == ""
+  ) {
+    throw new Error("You must provide polling in config");
+  }
+
+  if (this.config.useFanMode != false && this.config.useFanMode != true) {
+    throw new Error("Incorrect useFanMode in config");
+  }
+
+  if (this.config.useDryMode != false && this.config.useDryMode != true) {
+    throw new Error("Incorrect useDryMode in config");
+  }
+
+  if (
+    this.config.healthModeType != "SHOW" &&
+    this.config.healthModeType != "OFF" &&
+    this.config.healthModeType != "FORCE"
+  ) {
+    throw new Error("Incorrect healthModeType in config");
+  }
+
+  if (
+    this.config.swingType != "INDIVIDUAL" &&
+    this.config.swingType != "OFF" &&
+    this.config.swingType != "BOTH"
+  ) {
+    throw new Error("Incorrect swingType in config");
+  }
+
+  if (typeof this.config.lang == "undefined" || !this.config.lang) {
+    this.config.lang = {};
+    this.config.lang.acdevice_name = "AC";
+    this.config.lang.acdevice_fan = "Fan";
+    this.config.lang.acdevice_fan_rightleft = "RightLeft Swing";
+    this.config.lang.acdevice_fan_updown = "UpDown Swing";
+    this.config.lang.acdevice_healthmode = "Health Mode";
+    this.config.lang.acdevice_drymode = "Dry Mode";
+  } else {
+    this.config.lang.acdevice_name =
+      typeof this.config.lang.acdevice_name == "undefined" ||
+      !this.config.lang.acdevice_name
+        ? "AC"
+        : this.config.lang.acdevice_name;
+
+    this.config.lang.acdevice_fan =
+      typeof this.config.lang.acdevice_fan == "undefined" ||
+      !this.config.lang.acdevice_fan
+        ? "Fan"
+        : this.config.lang.acdevice_fan;
+
+    this.config.lang.acdevice_fan_rightleft =
+      typeof this.config.lang.acdevice_fan_rightleft == "undefined" ||
+      !this.config.lang.acdevice_fan_rightleft
+        ? "RightLeft Swing"
+        : this.config.lang.acdevice_fan_rightleft;
+
+    this.config.lang.acdevice_fan_updown =
+      typeof this.config.lang.acdevice_fan_updown == "undefined" ||
+      !this.config.lang.acdevice_fan_updown
+        ? "UpDown Swing"
+        : this.config.lang.acdevice_fan_updown;
+
+    this.config.lang.acdevice_healthmode =
+      typeof this.config.lang.acdevice_healthmode == "undefined" ||
+      !this.config.lang.acdevice_healthmode
+        ? "Health Mode"
+        : this.config.lang.acdevice_healthmode;
+
+    this.config.lang.acdevice_drymode =
+      typeof this.config.lang.acdevice_drymode == "undefined" ||
+      !this.config.lang.acdevice_drymode
+        ? "Dry Mode"
+        : this.config.lang.acdevice_drymode;
+  }
+
+  this.log.debug(this.config.lang);
 
   if (api) {
     if (api.version < 2.2) {

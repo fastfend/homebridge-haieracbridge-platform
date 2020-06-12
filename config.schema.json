@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "Haier AC Bridge",
+  "pluginAlias": "HaierACBridge",
   "pluginType": "platform",
   "singular": true,
   "headerDisplay": "header",
