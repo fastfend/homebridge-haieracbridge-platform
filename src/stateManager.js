@@ -21,6 +21,11 @@ class StateManager {
   }
 
   updateDevice(callback) {
+    var health =
+      this.platform.config.healthModeType == "FORCE"
+        ? true
+        : this.data.healthMode;
+
     var datapackage = {
       powerstate: this.data.powerState,
       mode: this.data.targetMode,
@@ -28,7 +33,7 @@ class StateManager {
       fanspeed: this.data.fanSpeed,
       swing_rl: this.data.swingRightLeft,
       swing_ud: this.data.swingUpDown,
-      healthmode: this.data.healthMode,
+      healthmode: health,
     };
 
     this.log("Sending datapackage: ");
@@ -112,11 +117,13 @@ class StateManager {
 
     //HEALTH
     if (valueName != "getHealthMode") {
-      this.services.healthService
-        .getCharacteristic(Characteristic.On)
-        .updateValue(
-          isOnline ? this.getHealthMode() : new Error("Device offline")
-        );
+      if (this.platform.config.healthModeType == "SHOW") {
+        this.services.healthService
+          .getCharacteristic(Characteristic.On)
+          .updateValue(
+            isOnline ? this.getHealthMode() : new Error("Device offline")
+          );
+      }
     }
 
     //SWING RL

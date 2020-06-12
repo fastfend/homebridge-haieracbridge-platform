@@ -83,17 +83,19 @@ class HaierAccessory {
     this.setupSwingUpDownService(this.swingUpDownService);
 
     //HEALTH
-    this.healthService = accessory.getService(
-      this.platform.config.lang.acdevice_healthmode
-    );
-    if (!this.healthService) {
-      this.healthService = accessory.addService(
-        Service.Switch,
-        this.platform.config.lang.acdevice_healthmode,
-        "H"
+    if (this.platform.config.healthModeType == "SHOW") {
+      this.healthService = accessory.getService(
+        this.platform.config.lang.acdevice_healthmode
       );
+      if (!this.healthService) {
+        this.healthService = accessory.addService(
+          Service.Switch,
+          this.platform.config.lang.acdevice_healthmode,
+          "H"
+        );
+      }
+      this.setupHealthService(this.healthService);
     }
-    this.setupHealthService(this.healthService);
 
     //DRYMODE
     if (this.platform.config.useDryMode) {
