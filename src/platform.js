@@ -190,7 +190,7 @@ HaierACBridge.prototype = {
 
   setDeviceData: function (devicedata, id) {
     if (devicedata == null) {
-      var accessory = this.getDeviceFromListById(devicedata.id);
+      var accessory = this.getDeviceFromListById(id);
       accessory.context.data.currentTemperature = 0;
       accessory.stateManager.updateValues();
     } else {
