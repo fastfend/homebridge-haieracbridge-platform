@@ -167,6 +167,7 @@ HaierACBridge.prototype = {
             this.setDeviceData(data);
           } else {
             if (result == "ECONNREFUSED") {
+              this.setDeviceData(null, accessory.context.data.id);
               this.log(
                 "ERROR: Couldn't connect to HaierAC Bridge. Check your IP settings in HomeBridge configuration"
               );
@@ -187,24 +188,30 @@ HaierACBridge.prototype = {
     );
   },
 
-  setDeviceData: function (devicedata) {
-    var accessory = this.getDeviceFromListById(devicedata.id);
-
-    if (accessory != undefined && !accessory.lock) {
-      accessory.context.data.powerState = devicedata.powerstate;
-      accessory.context.data.currentTemperature = devicedata.temp;
-      accessory.context.data.targetTemperature = devicedata.tempset;
-      accessory.context.data.humidity = devicedata.humidity;
-      accessory.context.data.targetMode = devicedata.mode;
-      accessory.context.data.fanSpeed = devicedata.fanspeed;
-      accessory.context.data.fanSafety = devicedata.safefan;
-      accessory.context.data.swingUpDown = devicedata.swing_ud;
-      accessory.context.data.swingRightLeft = devicedata.swing_rl;
-      accessory.context.data.healthMode = devicedata.healthmode;
-
+  setDeviceData: function (devicedata, id) {
+    if (devicedata == null) {
+      var accessory = this.getDeviceFromListById(devicedata.id);
+      accessory.context.data.currentTemperature = 0;
       accessory.stateManager.updateValues();
     } else {
-      this.log.debug("Device " + devicedata.id + " locked!");
+      var accessory = this.getDeviceFromListById(devicedata.id);
+
+      if (accessory != undefined && !accessory.lock) {
+        accessory.context.data.powerState = devicedata.powerstate;
+        accessory.context.data.currentTemperature = devicedata.temp;
+        accessory.context.data.targetTemperature = devicedata.tempset;
+        accessory.context.data.humidity = devicedata.humidity;
+        accessory.context.data.targetMode = devicedata.mode;
+        accessory.context.data.fanSpeed = devicedata.fanspeed;
+        accessory.context.data.fanSafety = devicedata.safefan;
+        accessory.context.data.swingUpDown = devicedata.swing_ud;
+        accessory.context.data.swingRightLeft = devicedata.swing_rl;
+        accessory.context.data.healthMode = devicedata.healthmode;
+
+        accessory.stateManager.updateValues();
+      } else {
+        this.log.debug("Device " + devicedata.id + " locked!");
+      }
     }
   },
 
