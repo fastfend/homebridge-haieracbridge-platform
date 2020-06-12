@@ -21,6 +21,11 @@ class StateManager {
   }
 
   updateDevice(callback) {
+    var health =
+      this.platform.config.healthModeType == "FORCE"
+        ? true
+        : this.data.healthMode;
+
     var datapackage = {
       powerstate: this.data.powerState,
       mode: this.data.targetMode,
@@ -28,7 +33,7 @@ class StateManager {
       fanspeed: this.data.fanSpeed,
       swing_rl: this.data.swingRightLeft,
       swing_ud: this.data.swingUpDown,
-      healthmode: this.data.healthMode,
+      healthmode: health,
     };
 
     this.log("Sending datapackage: ");
@@ -44,77 +49,123 @@ class StateManager {
   }
 
   updateValues(valueName) {
+    var isOnline = this.getIsOnline();
+
     //AC acService
     this.services.acService
       .getCharacteristic(Characteristic.CurrentHeatingCoolingState)
-      .updateValue(this.getCurrentHeatingCoolingState());
+      .updateValue(
+        isOnline
+          ? this.getCurrentHeatingCoolingState()
+          : new Error("Device offline")
+      );
 
-    if (valueName != "getTargetHeatingCoolingState") {
+    if (valueName != "setTargetHeatingCoolingState") {
       this.services.acService
         .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-        .updateValue(this.getTargetHeatingCoolingState());
+        .updateValue(
+          isOnline
+            ? this.getTargetHeatingCoolingState()
+            : new Error("Device offline")
+        );
     }
 
     this.services.acService
       .getCharacteristic(Characteristic.CurrentTemperature)
-      .updateValue(this.getCurrentTemperature());
+      .updateValue(
+        isOnline ? this.getCurrentTemperature() : new Error("Device offline")
+      );
 
-    if (valueName != "getTargetTemperature") {
+    if (valueName != "setTargetTemperature") {
       this.services.acService
         .getCharacteristic(Characteristic.TargetTemperature)
-        .updateValue(this.getTargetTemperature());
+        .updateValue(
+          isOnline ? this.getTargetTemperature() : new Error("Device offline")
+        );
     }
 
     this.services.acService
       .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-      .updateValue(this.getCurrentRelativeHumidity());
+      .updateValue(
+        isOnline
+          ? this.getCurrentRelativeHumidity()
+          : new Error("Device offline")
+      );
 
     //FAN fanService
-    if (valueName != "getTargetFanState") {
+    if (valueName != "setTargetFanState") {
       this.services.fanService
         .getCharacteristic(Characteristic.TargetFanState)
-        .updateValue(this.getTargetFanState());
+        .updateValue(
+          isOnline ? this.getTargetFanState() : new Error("Device offline")
+        );
     }
 
-    if (valueName != "getRotationSpeed") {
+    if (valueName != "setRotationSpeed") {
       this.services.fanService
         .getCharacteristic(Characteristic.RotationSpeed)
-        .updateValue(this.getRotationSpeed());
+        .updateValue(
+          isOnline ? this.getRotationSpeed() : new Error("Device offline")
+        );
     }
 
-    if (valueName != "getActive") {
+    if (valueName != "setActive") {
       this.services.fanService
         .getCharacteristic(Characteristic.Active)
-        .updateValue(this.getActive());
+        .updateValue(isOnline ? this.getActive() : new Error("Device offline"));
+    }
+
+    if (valueName != "setSwingMode") {
+      if (this.platform.config.swingType == "BOTH") {
+        this.services.fanService
+          .getCharacteristic(Characteristic.SwingMode)
+          .updateValue(
+            isOnline ? this.getSwingMode() : new Error("Device offline")
+          );
+      }
     }
 
     //HEALTH
-    if (valueName != "getHealthMode") {
-      this.services.healthService
-        .getCharacteristic(Characteristic.On)
-        .updateValue(this.getHealthMode());
+    if (valueName != "setHealthMode") {
+      if (this.platform.config.healthModeType == "SHOW") {
+        this.services.healthService
+          .getCharacteristic(Characteristic.On)
+          .updateValue(
+            isOnline ? this.getHealthMode() : new Error("Device offline")
+          );
+      }
     }
 
     //SWING RL
-    if (valueName != "getSwingRightLeft") {
-      this.services.swingRightLeftService
-        .getCharacteristic(Characteristic.On)
-        .updateValue(this.getSwingRightLeft());
+    if (valueName != "setSwingRightLeft") {
+      if (this.platform.config.swingType == "INDIVIDUAL") {
+        this.services.swingRightLeftService
+          .getCharacteristic(Characteristic.On)
+          .updateValue(
+            isOnline ? this.getSwingRightLeft() : new Error("Device offline")
+          );
+      }
     }
 
     //SWING UD
-    if (valueName != "getSwingUpDown") {
-      this.services.swingUpDownService
-        .getCharacteristic(Characteristic.On)
-        .updateValue(this.getSwingUpDown());
+    if (valueName != "setSwingUpDown") {
+      if (this.platform.config.swingType == "INDIVIDUAL") {
+        this.services.swingUpDownService
+          .getCharacteristic(Characteristic.On)
+          .updateValue(
+            isOnline ? this.getSwingUpDown() : new Error("Device offline")
+          );
+      }
     }
 
     //DRYMODE
-    if (valueName != "getDryMode") {
+    if (valueName != "setDryMode") {
       if (this.platform.config.useDryMode) {
         this.services.dryModeService
           .getCharacteristic(Characteristic.On)
-          .updateValue(this.getDryMode());
+          .updateValue(
+            isOnline ? this.getDryMode() : new Error("Device offline")
+          );
       }
     }
   }
@@ -164,27 +215,42 @@ class StateManager {
   }
 
   setTargetHeatingCoolingState(value) {
-    // if (this.data.targetMode != "DRY" && this.data.targetMode != "FAN") {
-    switch (value) {
-      case Characteristic.TargetHeatingCoolingState.OFF:
-        this.data.powerState = false;
-        break;
-      case Characteristic.TargetHeatingCoolingState.COOL:
-        this.data.powerState = true;
-        this.data.targetMode = "COOL";
-        break;
-      case Characteristic.TargetHeatingCoolingState.HEAT:
-        this.data.powerState = true;
-        this.data.targetMode = "HEAT";
-        break;
-      case Characteristic.TargetHeatingCoolingState.AUTO:
-        this.data.powerState = true;
-        this.data.targetMode = "SMART";
-        break;
-    }
-    // }
+    if (!this.targetHeatingCoolingLock) {
+      switch (value) {
+        case Characteristic.TargetHeatingCoolingState.OFF:
+          if (this.data.powerState == true) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = false;
+          break;
+        case Characteristic.TargetHeatingCoolingState.COOL:
+          if (this.data.powerState == false) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = true;
+          this.data.targetMode = "COOL";
+          break;
+        case Characteristic.TargetHeatingCoolingState.HEAT:
+          if (this.data.powerState == false) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = true;
+          this.data.targetMode = "HEAT";
+          break;
+        case Characteristic.TargetHeatingCoolingState.AUTO:
+          if (this.data.powerState == false) {
+            this.targetFanLock = true;
+          }
+          this.data.powerState = true;
+          this.data.targetMode = "SMART";
+          break;
+      }
 
-    this.updateValues("setTargetHeatingCoolingState");
+      this.updateValues("setTargetHeatingCoolingState");
+    } else {
+      this.targetHeatingCoolingLock = false;
+      this.log.debug("Unlocked TargetHeatingCoolingState setter");
+    }
   }
 
   getCurrentTemperature() {
@@ -219,23 +285,32 @@ class StateManager {
   }
 
   setTargetFanState(value) {
-    let powerState = this.data.powerState;
-    let targetMode = this.data.targetMode;
+    if (!this.targetFanLock) {
+      let powerState = this.data.powerState;
+      let targetMode = this.data.targetMode;
 
-    if (targetMode == "FAN") {
-      this.updateValues("setTargetFanState");
-      return;
-    } else {
-      if (value) {
-        if (!powerState) {
-          this.data.powerState = true;
-        }
-        this.data.lastFanSpeed = this.data.fanSpeed;
-        this.data.fanSpeed = "AUTO";
+      if (targetMode == "FAN") {
+        this.updateValues("setTargetFanState");
+        return;
       } else {
-        this.data.fanSpeed = this.data.lastFanSpeed;
+        if (value) {
+          if (!powerState) {
+            this.data.powerState = true;
+          }
+          this.data.lastFanSpeed = this.data.fanSpeed;
+          this.data.fanSpeed = "AUTO";
+        } else {
+          if (this.data.lastFanSpeed == "AUTO") {
+            this.data.fanSpeed = "MID";
+          } else {
+            this.data.fanSpeed = this.data.lastFanSpeed;
+          }
+        }
+        this.updateValues("setTargetFanState");
       }
-      this.updateValues("setTargetFanState");
+    } else {
+      this.targetFanLock = false;
+      this.log.debug("Unlocked targetFanState setter");
     }
   }
 
@@ -355,6 +430,32 @@ class StateManager {
     this.updateValues("setSwingUpDown");
   }
 
+  getSwingMode() {
+    let swingUpDown = this.data.swingUpDown;
+    let swingRightLeft = this.data.swingRightLeft;
+    let powerState = this.data.powerState;
+
+    if (powerState) {
+      return swingUpDown && swingRightLeft;
+    } else {
+      return false;
+    }
+  }
+
+  setSwingMode(value) {
+    let powerState = this.data.powerState;
+    if (powerState) {
+      if (value == Characteristic.SwingMode.SWING_DISABLED) {
+        this.data.swingUpDown = false;
+        this.data.swingRightLeft = false;
+      } else {
+        this.data.swingUpDown = true;
+        this.data.swingRightLeft = true;
+      }
+    }
+    this.updateValues("setSwingMode");
+  }
+
   getDryMode() {
     let targetMode = this.data.targetMode;
     let powerState = this.data.powerState;
@@ -372,6 +473,8 @@ class StateManager {
       this.data.powerState = true;
       this.data.lastTargetMode = this.data.targetMode;
       this.data.targetMode = "DRY";
+      this.targetHeatingCoolingLock = true;
+      this.targetFanLock = true;
     } else {
       this.data.targetMode = this.data.lastTargetMode;
       if (!this.data.lastPowerState) {
