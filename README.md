@@ -6,6 +6,10 @@
 
 `homebridge-haieracbridge-platform` is plugin for homebridge which allows you to control Haier AC devices from HomeKit! It should work with devices controlled by SmartAir2 app.
 
+## Warning
+
+I haven't add HaierACBridge app to GitHub yet. Right now I'm taking my finals so I cant say when i will push it. Sorry for inconvenience.
+
 ## Features
 
 - HomeKit automation
