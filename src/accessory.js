@@ -56,31 +56,48 @@ class HaierAccessory {
     }
     this.setupFanService(this.fanService);
 
-    //FANLEFTRIGHT
-    this.swingRightLeftService = accessory.getService(
-      this.platform.config.lang.acdevice_fan_rightleft
-    );
-    if (!this.swingRightLeftService) {
-      this.swingRightLeftService = accessory.addService(
-        Service.Switch,
-        this.platform.config.lang.acdevice_fan_rightleft,
-        "LR"
+    if (this.platform.config.swingType == "INDIVIDUAL") {
+      //FANLEFTRIGHT
+      this.swingRightLeftService = accessory.getService(
+        this.platform.config.lang.acdevice_fan_rightleft
       );
-    }
-    this.setupSwingRightLeftService(this.swingRightLeftService);
+      if (!this.swingRightLeftService) {
+        this.swingRightLeftService = accessory.addService(
+          Service.Switch,
+          this.platform.config.lang.acdevice_fan_rightleft,
+          "LR"
+        );
+      }
+      this.setupSwingRightLeftService(this.swingRightLeftService);
 
-    //FANUPDOWN
-    this.swingUpDownService = accessory.getService(
-      this.platform.config.lang.acdevice_fan_updown
-    );
-    if (!this.swingUpDownService) {
-      this.swingUpDownService = accessory.addService(
-        Service.Switch,
-        this.platform.config.lang.acdevice_fan_updown,
-        "UD"
+      //FANUPDOWN
+      this.swingUpDownService = accessory.getService(
+        this.platform.config.lang.acdevice_fan_updown
       );
+      if (!this.swingUpDownService) {
+        this.swingUpDownService = accessory.addService(
+          Service.Switch,
+          this.platform.config.lang.acdevice_fan_updown,
+          "UD"
+        );
+      }
+      this.setupSwingUpDownService(this.swingUpDownService);
+    } else {
+      this.swingRightLeftService = accessory.getService(
+        this.platform.config.lang.acdevice_fan_rightleft
+      );
+      this.swingUpDownService = accessory.getService(
+        this.platform.config.lang.acdevice_fan_updown
+      );
+
+      if (this.swingRightLeftService) {
+        accessory.removeService(this.swingRightLeftService);
+      }
+
+      if (this.swingUpDownService) {
+        accessory.removeService(this.swingUpDownService);
+      }
     }
-    this.setupSwingUpDownService(this.swingUpDownService);
 
     //HEALTH
     if (this.platform.config.healthModeType == "SHOW") {
@@ -95,6 +112,13 @@ class HaierAccessory {
         );
       }
       this.setupHealthService(this.healthService);
+    } else {
+      this.healthService = accessory.getService(
+        this.platform.config.lang.acdevice_healthmode
+      );
+      if (this.healthService) {
+        accessory.removeService(this.healthService);
+      }
     }
 
     //DRYMODE
@@ -110,6 +134,13 @@ class HaierAccessory {
         );
       }
       this.setupDryModeService(this.dryModeService);
+    } else {
+      this.dryModeService = accessory.getService(
+        this.platform.config.lang.acdevice_drymode
+      );
+      if (this.dryModeService) {
+        accessory.removeService(this.dryModeService);
+      }
     }
 
     //INFO
@@ -274,6 +305,19 @@ class HaierAccessory {
           this.unlockUpdates();
         });
       });
+
+    if (this.platform.config.swingType == "BOTH") {
+      service
+        .getCharacteristic(Characteristic.SwingMode)
+        .on("set", (value, callback) => {
+          this.lockUpdates();
+          this.stateManager.setSwingMode(value);
+          this.stateManager.updateDevice(() => {
+            callback();
+            this.unlockUpdates();
+          });
+        });
+    }
   }
 }
 

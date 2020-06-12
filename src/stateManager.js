@@ -115,6 +115,16 @@ class StateManager {
         .updateValue(isOnline ? this.getActive() : new Error("Device offline"));
     }
 
+    if (valueName != "getSwingMode") {
+      if (this.platform.config.swingType == "BOTH") {
+        this.services.fanService
+          .getCharacteristic(Characteristic.SwingMode)
+          .updateValue(
+            isOnline ? this.getSwingMode() : new Error("Device offline")
+          );
+      }
+    }
+
     //HEALTH
     if (valueName != "getHealthMode") {
       if (this.platform.config.healthModeType == "SHOW") {
@@ -414,6 +424,32 @@ class StateManager {
       this.data.swingUpDown = value;
     }
     this.updateValues("setSwingUpDown");
+  }
+
+  getSwingMode() {
+    let swingUpDown = this.data.swingUpDown;
+    let swingRightLeft = this.data.swingRightLeft;
+    let powerState = this.data.powerState;
+
+    if (powerState) {
+      return swingUpDown && swingRightLeft;
+    } else {
+      return false;
+    }
+  }
+
+  setSwingMode(value) {
+    let powerState = this.data.powerState;
+    if (powerState) {
+      if (value == Characteristic.SwingMode.SWING_DISABLED) {
+        this.data.swingUpDown = false;
+        this.data.swingRightLeft = false;
+      } else {
+        this.data.swingUpDown = true;
+        this.data.swingRightLeft = true;
+      }
+    }
+    this.updateValues("setSwingMode");
   }
 
   getDryMode() {
