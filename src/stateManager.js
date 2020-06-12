@@ -60,7 +60,7 @@ class StateManager {
           : new Error("Device offline")
       );
 
-    if (valueName != "getTargetHeatingCoolingState") {
+    if (valueName != "setTargetHeatingCoolingState") {
       this.services.acService
         .getCharacteristic(Characteristic.TargetHeatingCoolingState)
         .updateValue(
@@ -76,7 +76,7 @@ class StateManager {
         isOnline ? this.getCurrentTemperature() : new Error("Device offline")
       );
 
-    if (valueName != "getTargetTemperature") {
+    if (valueName != "setTargetTemperature") {
       this.services.acService
         .getCharacteristic(Characteristic.TargetTemperature)
         .updateValue(
@@ -93,7 +93,7 @@ class StateManager {
       );
 
     //FAN fanService
-    if (valueName != "getTargetFanState") {
+    if (valueName != "setTargetFanState") {
       this.services.fanService
         .getCharacteristic(Characteristic.TargetFanState)
         .updateValue(
@@ -101,7 +101,7 @@ class StateManager {
         );
     }
 
-    if (valueName != "getRotationSpeed") {
+    if (valueName != "setRotationSpeed") {
       this.services.fanService
         .getCharacteristic(Characteristic.RotationSpeed)
         .updateValue(
@@ -109,13 +109,13 @@ class StateManager {
         );
     }
 
-    if (valueName != "getActive") {
+    if (valueName != "setActive") {
       this.services.fanService
         .getCharacteristic(Characteristic.Active)
         .updateValue(isOnline ? this.getActive() : new Error("Device offline"));
     }
 
-    if (valueName != "getSwingMode") {
+    if (valueName != "setSwingMode") {
       if (this.platform.config.swingType == "BOTH") {
         this.services.fanService
           .getCharacteristic(Characteristic.SwingMode)
@@ -126,7 +126,7 @@ class StateManager {
     }
 
     //HEALTH
-    if (valueName != "getHealthMode") {
+    if (valueName != "setHealthMode") {
       if (this.platform.config.healthModeType == "SHOW") {
         this.services.healthService
           .getCharacteristic(Characteristic.On)
@@ -137,7 +137,7 @@ class StateManager {
     }
 
     //SWING RL
-    if (valueName != "getSwingRightLeft") {
+    if (valueName != "setSwingRightLeft") {
       this.services.swingRightLeftService
         .getCharacteristic(Characteristic.On)
         .updateValue(
@@ -146,7 +146,7 @@ class StateManager {
     }
 
     //SWING UD
-    if (valueName != "getSwingUpDown") {
+    if (valueName != "setSwingUpDown") {
       this.services.swingUpDownService
         .getCharacteristic(Characteristic.On)
         .updateValue(
@@ -155,7 +155,7 @@ class StateManager {
     }
 
     //DRYMODE
-    if (valueName != "getDryMode") {
+    if (valueName != "setDryMode") {
       if (this.platform.config.useDryMode) {
         this.services.dryModeService
           .getCharacteristic(Characteristic.On)
