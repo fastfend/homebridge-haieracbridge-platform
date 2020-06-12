@@ -44,69 +44,97 @@ class StateManager {
   }
 
   updateValues(valueName) {
+    var isOnline = this.getIsOnline();
+
     //AC acService
     this.services.acService
       .getCharacteristic(Characteristic.CurrentHeatingCoolingState)
-      .updateValue(this.getCurrentHeatingCoolingState());
+      .updateValue(
+        isOnline
+          ? this.getCurrentHeatingCoolingState()
+          : new Error("Device offline")
+      );
 
     if (valueName != "getTargetHeatingCoolingState") {
       this.services.acService
         .getCharacteristic(Characteristic.TargetHeatingCoolingState)
-        .updateValue(this.getTargetHeatingCoolingState());
+        .updateValue(
+          isOnline
+            ? this.getTargetHeatingCoolingState()
+            : new Error("Device offline")
+        );
     }
 
     this.services.acService
       .getCharacteristic(Characteristic.CurrentTemperature)
-      .updateValue(this.getCurrentTemperature());
+      .updateValue(
+        isOnline ? this.getCurrentTemperature() : new Error("Device offline")
+      );
 
     if (valueName != "getTargetTemperature") {
       this.services.acService
         .getCharacteristic(Characteristic.TargetTemperature)
-        .updateValue(this.getTargetTemperature());
+        .updateValue(
+          isOnline ? this.getTargetTemperature() : new Error("Device offline")
+        );
     }
 
     this.services.acService
       .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-      .updateValue(this.getCurrentRelativeHumidity());
+      .updateValue(
+        isOnline
+          ? this.getCurrentRelativeHumidity()
+          : new Error("Device offline")
+      );
 
     //FAN fanService
     if (valueName != "getTargetFanState") {
       this.services.fanService
         .getCharacteristic(Characteristic.TargetFanState)
-        .updateValue(this.getTargetFanState());
+        .updateValue(
+          isOnline ? this.getTargetFanState() : new Error("Device offline")
+        );
     }
 
     if (valueName != "getRotationSpeed") {
       this.services.fanService
         .getCharacteristic(Characteristic.RotationSpeed)
-        .updateValue(this.getRotationSpeed());
+        .updateValue(
+          isOnline ? this.getRotationSpeed() : new Error("Device offline")
+        );
     }
 
     if (valueName != "getActive") {
       this.services.fanService
         .getCharacteristic(Characteristic.Active)
-        .updateValue(this.getActive());
+        .updateValue(isOnline ? this.getActive() : new Error("Device offline"));
     }
 
     //HEALTH
     if (valueName != "getHealthMode") {
       this.services.healthService
         .getCharacteristic(Characteristic.On)
-        .updateValue(this.getHealthMode());
+        .updateValue(
+          isOnline ? this.getHealthMode() : new Error("Device offline")
+        );
     }
 
     //SWING RL
     if (valueName != "getSwingRightLeft") {
       this.services.swingRightLeftService
         .getCharacteristic(Characteristic.On)
-        .updateValue(this.getSwingRightLeft());
+        .updateValue(
+          isOnline ? this.getSwingRightLeft() : new Error("Device offline")
+        );
     }
 
     //SWING UD
     if (valueName != "getSwingUpDown") {
       this.services.swingUpDownService
         .getCharacteristic(Characteristic.On)
-        .updateValue(this.getSwingUpDown());
+        .updateValue(
+          isOnline ? this.getSwingUpDown() : new Error("Device offline")
+        );
     }
 
     //DRYMODE
@@ -114,7 +142,9 @@ class StateManager {
       if (this.platform.config.useDryMode) {
         this.services.dryModeService
           .getCharacteristic(Characteristic.On)
-          .updateValue(this.getDryMode());
+          .updateValue(
+            isOnline ? this.getDryMode() : new Error("Device offline")
+          );
       }
     }
   }
