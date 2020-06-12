@@ -1,6 +1,6 @@
 {
   "name": "homebridge-haieracbridge-platform",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Homebridge plugin for Haier AC (SmartAir2 controlled)",
   "main": "index.js",
   "scripts": {
