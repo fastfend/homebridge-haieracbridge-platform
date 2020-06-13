@@ -233,7 +233,7 @@ HaierACBridge.prototype = {
     });
   },
   addNonExistingDevices: function (devices) {
-    this.log("Looking for devices to add...");
+    this.log.debug("Looking for devices to add...");
     var toAdd = [];
 
     for (var a = 0; a < devices.length; a++) {
@@ -253,7 +253,7 @@ HaierACBridge.prototype = {
       }
     }
     if (toAdd.length > 0) {
-      this.log("Found: " + toAdd.length);
+      this.log.debug("Found: " + toAdd.length);
       this.log.debug(
         "Device count before action in DeviceList: " + HaierACDevicesList.length
       );
@@ -264,11 +264,11 @@ HaierACBridge.prototype = {
         "Device count after action in DeviceList: " + HaierACDevicesList.length
       );
     } else {
-      this.log("No devices to add found");
+      this.log.debug("No devices to add found");
     }
   },
   removeNonExistingDevices: function (devices) {
-    this.log("Looking for devices to remove...");
+    this.log.debug("Looking for devices to remove...");
     var toRemove = [];
 
     for (var a = 0; a < this.accessories.length; a++) {
@@ -287,7 +287,7 @@ HaierACBridge.prototype = {
     }
 
     if (toRemove.length > 0) {
-      this.log("Found: " + toRemove.length);
+      this.log.debug("Found: " + toRemove.length);
       this.log.debug(
         "Device count before action in DeviceList: " + HaierACDevicesList.length
       );
@@ -298,7 +298,7 @@ HaierACBridge.prototype = {
         "Device count after action in DeviceList: " + HaierACDevicesList.length
       );
     } else {
-      this.log("No devices to remove found");
+      this.log.debug("No devices to remove found");
     }
   },
   addDevice: function (device) {

@@ -36,8 +36,8 @@ class StateManager {
       healthmode: health,
     };
 
-    this.log("Sending datapackage: ");
-    this.log(datapackage);
+    this.log.debug("Sending datapackage: ");
+    this.log.debug(datapackage);
 
     this.platform.acApi.setDeviceData(
       this.data.id,
