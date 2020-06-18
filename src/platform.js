@@ -174,7 +174,8 @@ HaierACBridge.prototype = {
 
         this.acApi.getDeviceData(accessory.context.data.id, (result, data) => {
           if (this.config.debug) {
-            this.log("result: " + result);
+            this.log("data:");
+            this.log(data);
           }
           if (result == "OK") {
             this.log.debug("Updated " + accessory.context.data.id);
@@ -214,10 +215,6 @@ HaierACBridge.prototype = {
       accessory.stateManager.updateValues();
     } else {
       var accessory = this.getDeviceFromListById(devicedata.id);
-      if (this.config.debug) {
-        this.log("accessory: " + accessory);
-        this.log("devicedata: " + devicedata);
-      }
       if (accessory != undefined && !accessory.lock) {
         accessory.context.data.powerState = devicedata.powerstate;
         accessory.context.data.currentTemperature = devicedata.temp;
@@ -240,6 +237,10 @@ HaierACBridge.prototype = {
   checkDevices: async function () {
     return new Promise((resolve) => {
       this.acApi.getDevices((result, data) => {
+        if (this.config.debug) {
+          this.log("data:");
+          this.log(data);
+        }
         if (result == "OK") {
           this.addNonExistingDevices(data);
           this.removeNonExistingDevices(data);
@@ -257,7 +258,9 @@ HaierACBridge.prototype = {
     });
   },
   addNonExistingDevices: function (devices) {
-    this.log.debug("Looking for devices to add...");
+    if (this.config.debug) {
+      this.log("Looking for devices to add...");
+    }
     var toAdd = [];
 
     for (var a = 0; a < devices.length; a++) {
@@ -355,7 +358,7 @@ HaierACBridge.prototype = {
     this.api.unregisterPlatformAccessories(
       "homebridge-haieracbridge-platform",
       "HaierACBridge",
-      [accessory]
+      [accessory.accessory]
     );
     HaierACDevicesList = this.arrayRemove(
       HaierACDevicesList,
@@ -363,6 +366,7 @@ HaierACBridge.prototype = {
         (element) => element.context.data.id == accessory.context.data.id
       )
     );
+    this.accessories = this.arrayRemove(this.accessories, accessory.accessory);
   },
   arrayRemove: function (arr, value) {
     return arr.filter(function (ele) {

@@ -31,8 +31,12 @@ class RestAPI {
           result = "BAD_TOKEN";
           callback(result, response);
         } else {
-          data = JSON.parse(response);
-          callback(result, data);
+          try {
+            data = JSON.parse(response);
+            callback(result, data);
+          } catch {
+            callback("ERROR", "ERROR");
+          }
         }
       });
     });
@@ -65,12 +69,17 @@ class RestAPI {
       });
 
       res.on("end", () => {
+        this.log(response);
         if (response == "Wrong token" || response == "Missing token header") {
           result = "BAD_TOKEN";
           callback(result, response);
         } else {
-          data = JSON.parse(response);
-          callback(result, data);
+          try {
+            data = JSON.parse(response);
+            callback(result, data);
+          } catch {
+            callback("ERROR", "ERROR");
+          }
         }
       });
     });
@@ -107,7 +116,12 @@ class RestAPI {
           result = "BAD_TOKEN";
           callback(result, response);
         } else {
-          callback(result, response);
+          try {
+            data = JSON.parse(response);
+            callback(result, data);
+          } catch {
+            callback("ERROR", "ERROR");
+          }
         }
       });
     });
