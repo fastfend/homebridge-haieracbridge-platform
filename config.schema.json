@@ -133,6 +133,13 @@
             "description": "Name of Dry Mode subaccessory"
           }
         }
+      },
+      "debug": {
+        "title": "Show Debug Data",
+        "type": "boolean",
+        "required": false,
+        "default": false,
+        "description": "When enabled, more logs will appear in console"
       }
     }
   }

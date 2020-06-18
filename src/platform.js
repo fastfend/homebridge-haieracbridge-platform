@@ -26,7 +26,7 @@ function HaierACBridge(log, config, api) {
   this.accessories = [];
   this.config = config;
 
-  this.config.polling = this.config.polling * 1000 || 5000;
+  this.config.debug = this.config.debug || false;
   if (
     this.config.ip == undefined ||
     this.config.ip == null ||
@@ -165,8 +165,17 @@ HaierACBridge.prototype = {
       this.log("Updating devices data...");
       var done = 0;
 
-      this.accessories.forEach((accessory) => {
+      if (this.config.debug) {
+        this.log("accessories: " + this.accessories.length);
+      }
+
+      for (var a = 0; a < this.accessories.length; a++) {
+        var accessory = this.accessories[a];
+
         this.acApi.getDeviceData(accessory.context.data.id, (result, data) => {
+          if (this.config.debug) {
+            this.log("result: " + result);
+          }
           if (result == "OK") {
             this.log.debug("Updated " + accessory.context.data.id);
             this.setDeviceData(data);
@@ -185,7 +194,7 @@ HaierACBridge.prototype = {
             resolve();
           }
         });
-      });
+      }
     });
   },
 
@@ -197,12 +206,18 @@ HaierACBridge.prototype = {
 
   setDeviceData: function (devicedata, id) {
     if (devicedata == null) {
+      if (this.config.debug) {
+        this.log("devicedata: null");
+      }
       var accessory = this.getDeviceFromListById(id);
       accessory.context.data.currentTemperature = 0;
       accessory.stateManager.updateValues();
     } else {
       var accessory = this.getDeviceFromListById(devicedata.id);
-
+      if (this.config.debug) {
+        this.log("accessory: " + accessory);
+        this.log("devicedata: " + devicedata);
+      }
       if (accessory != undefined && !accessory.lock) {
         accessory.context.data.powerState = devicedata.powerstate;
         accessory.context.data.currentTemperature = devicedata.temp;
