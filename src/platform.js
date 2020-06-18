@@ -158,16 +158,23 @@ HaierACBridge.prototype = {
 
   updateDevices: async function () {
     return new Promise((resolve) => {
+      if (this.accessories.length == 0) {
+        resolve();
+        return;
+      }
       this.log("Updating devices data...");
       var done = 0;
+
       this.accessories.forEach((accessory) => {
         this.acApi.getDeviceData(accessory.context.data.id, (result, data) => {
           if (result == "OK") {
             this.log.debug("Updated " + accessory.context.data.id);
             this.setDeviceData(data);
           } else {
-            if (result == "ECONNREFUSED") {
-              this.setDeviceData(null, accessory.context.data.id);
+            this.setDeviceData(null, accessory.context.data.id);
+            if (result == "BAD_TOKEN") {
+              this.log("ERROR: Your token is incorrect");
+            } else {
               this.log(
                 "ERROR: Couldn't connect to HaierAC Bridge. Check your IP settings in HomeBridge configuration"
               );
@@ -222,7 +229,9 @@ HaierACBridge.prototype = {
           this.addNonExistingDevices(data);
           this.removeNonExistingDevices(data);
         } else {
-          if (result == "ECONNREFUSED") {
+          if (result == "BAD_TOKEN") {
+            this.log("ERROR: Your token is incorrect");
+          } else {
             this.log(
               "ERROR: Couldn't connect to HaierAC Bridge. Check your IP settings in HomeBridge configuration"
             );
@@ -241,8 +250,8 @@ HaierACBridge.prototype = {
 
       let exists = false;
 
-      for (var b = 0; b < this.accessories.length; b++) {
-        if (this.accessories[b].context.data.id == device.id) {
+      for (var b = 0; b < HaierACDevicesList.length; b++) {
+        if (HaierACDevicesList[b].context.data.id == device.id) {
           exists = true;
           break;
         }
@@ -271,8 +280,8 @@ HaierACBridge.prototype = {
     this.log.debug("Looking for devices to remove...");
     var toRemove = [];
 
-    for (var a = 0; a < this.accessories.length; a++) {
-      var accessory = this.accessories[a];
+    for (var a = 0; a < HaierACDevicesList.length; a++) {
+      var accessory = HaierACDevicesList[a];
       var exists = false;
       for (var b = 0; b < devices.length; b++) {
         var device = devices[b];
@@ -306,7 +315,6 @@ HaierACBridge.prototype = {
     if (
       !this.accessories.find((cachedaccessory) => cachedaccessory.UUID === uuid)
     ) {
-      const uuid = this.api.hap.uuid.generate(device.id);
       const accessoryBase = new this.api.platformAccessory(
         this.config.lang.acdevice_name + " " + device.name,
         uuid
@@ -314,9 +322,11 @@ HaierACBridge.prototype = {
       const accessory = new HaierAccessory(this, accessoryBase, device);
       HaierACDevicesList.push(accessory);
       this.log("Registering: " + device.name + "(" + device.id + ")");
-      this.api.registerPlatformAccessories("HaierAccessory", "HaierACBridge", [
-        accessory.getAccessory(),
-      ]);
+      this.api.registerPlatformAccessories(
+        "homebridge-haieracbridge-platform",
+        "HaierACBridge",
+        [accessory.getAccessory()]
+      );
     }
   },
   removeDevice: function (accessory) {
@@ -327,9 +337,11 @@ HaierACBridge.prototype = {
         accessory.context.data.id +
         ")"
     );
-    this.api.unregisterPlatformAccessories("HaierAccessory", "HaierACBridge", [
-      accessory,
-    ]);
+    this.api.unregisterPlatformAccessories(
+      "homebridge-haieracbridge-platform",
+      "HaierACBridge",
+      [accessory]
+    );
     HaierACDevicesList = this.arrayRemove(
       HaierACDevicesList,
       HaierACDevicesList.find(

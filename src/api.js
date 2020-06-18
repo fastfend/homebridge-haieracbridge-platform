@@ -27,7 +27,7 @@ class RestAPI {
       });
 
       res.on("end", () => {
-        if (response == "Wrong Token" || response == "Missing token header") {
+        if (response == "Wrong token" || response == "Missing token header") {
           result = "BAD_TOKEN";
           callback(result, response);
         } else {
@@ -65,7 +65,7 @@ class RestAPI {
       });
 
       res.on("end", () => {
-        if (response == "Wrong Token" || response == "Missing token header") {
+        if (response == "Wrong token" || response == "Missing token header") {
           result = "BAD_TOKEN";
           callback(result, response);
         } else {
