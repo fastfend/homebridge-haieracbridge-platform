@@ -171,7 +171,15 @@ class StateManager {
   }
 
   getIsOnline() {
-    return this.data.currentTemperature != 0;
+    if (this.data.online) {
+      if (this.data.currentTemperature != 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   getCurrentHeatingCoolingState() {

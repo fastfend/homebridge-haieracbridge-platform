@@ -226,6 +226,7 @@ HaierACBridge.prototype = {
         accessory.context.data.swingUpDown = devicedata.swing_ud;
         accessory.context.data.swingRightLeft = devicedata.swing_rl;
         accessory.context.data.healthMode = devicedata.healthmode;
+        accessory.context.data.online = devicedata.online;
 
         accessory.stateManager.updateValues();
       } else {

@@ -25,6 +25,7 @@ class HaierAccessory {
         base_fan_ud: this.platform.config.lang.acdevice_fan_updown,
         base_healthmode: this.platform.config.lang.acdevice_healthmode,
         base_drymode: this.platform.config.lang.acdevice_drymode,
+        online: false,
         powerState: false,
         lastPowerState: false,
         fanSpeed: "HIGH",
