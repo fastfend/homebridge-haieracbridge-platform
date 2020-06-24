@@ -1,14 +1,16 @@
 <span align="center">
 
 # `homebridge-haieracbridge-platform`
+<a href="https://www.npmjs.com/package/homebridge-haieracbridge-platform"><img title="npm version" src="https://badgen.net/npm/v/homebridge-haieracbridge-platform" ></a>
+<a href="https://www.npmjs.com/package/homebridge-haieracbridge-platform"><img title="npm downloads" src="https://badgen.net/npm/dt/homebridge-haieracbridge-platform" ></a>
+<a href="https://github.com/fastfend/HaierACBridge"><img title="made with" src="https://badgen.net/badge/made with/HaierACBridge/orange" ></a>
+<a href="https://github.com/homebridge/homebridge"><img title="made for" src="https://badgen.net/badge/plugin for/homebridge/purple" ></a>
+<a href="https://github.com/fastfend/homebridge-haieracbridge-platform/blob/master/LICENSE"><img title="license" src="https://badgen.net/badge/license/GPL-3/blue" ></a>
+
 
 </span>
 
 `homebridge-haieracbridge-platform` is plugin for homebridge which allows you to control Haier AC devices from HomeKit! It should work with devices controlled by SmartAir2 app.
-
-## Warning
-
-I haven't add HaierACBridge app to GitHub yet. Right now I'm taking my finals so I cant say when i will push it. Sorry for inconvenience.
 
 ## Features
 
@@ -16,7 +18,7 @@ I haven't add HaierACBridge app to GitHub yet. Right now I'm taking my finals so
 - Automatic detection of Haier devices added in your SmartAir2 app
 - Turn AC on / off
 - Show temperature values
-- Show relative humidity
+- Show relative humidity if AC supports it
 - Set every available mode `COOL, HEAT, SMART, DRY, FAN`
 - Control fan speed, even auto
 - Ability to control swing mode in every axis
@@ -34,10 +36,11 @@ If you want to access devices directly please use [bstuff/haier-ac-remote](https
 
 ## Installation
 
+1. Download [HaierACBridge](https://github.com/fastfend/HaierACBridge) app
 1. Install and login in HaierACBridge app
 2. Get token and IP address from app
-3. Install this plugin by running `npm install -g homebridge-haieracbridge-platform`
-4. Update your homebridge `config.json` (refer to config section).
+3. Install this plugin by running `npm install -g homebridge-haieracbridge-platform` or by finding it in homebridge-config-ui-x
+4. Update your homebridge `config.json` (refer to config section) or configure plugin in homebridge-config-ui-x
 
 > NOTE: This plugin is supported by `homebridge-config-ui-x` plugin
 
