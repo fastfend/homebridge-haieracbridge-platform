@@ -118,6 +118,10 @@ When `healthModeType` is set to `FORCE`, every time some action is being made pl
 
 Make sure you set desired language values BEFORE starting plugin for the first time or BEFORE adding new device in SmartAir2.
 
+### How to install it on without having an Android device?
+
+See [wiki](https://github.com/fastfend/HaierACBridge/wiki/How-to-install-it-without-Android-device%3F)
+
 ## 100% working Haier AC models
 
 - AS25S2SF1FA-BC
