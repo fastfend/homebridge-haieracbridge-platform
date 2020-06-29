@@ -340,6 +340,7 @@ HaierACBridge.prototype = {
       );
       const accessory = new HaierAccessory(this, accessoryBase, device);
       HaierACDevicesList.push(accessory);
+      this.accessories.push(accessory);
       this.log("Registering: " + device.name + "(" + device.id + ")");
       this.api.registerPlatformAccessories(
         "homebridge-haieracbridge-platform",
