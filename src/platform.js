@@ -32,14 +32,16 @@ function HaierACBridge(log, config, api) {
     this.config.ip == null ||
     this.config.ip == ""
   ) {
-    throw new Error("You must provide IP from HaierACBridge Android app");
+    this.log("You must provide IP from HaierACBridge Android app");
+    return;
   }
   if (
     this.config.token == undefined ||
     this.config.token == null ||
     this.config.token == ""
   ) {
-    throw new Error("You must provide token from HaierACBridge Android app");
+    this.log("You must provide token from HaierACBridge Android app");
+    return;
   }
 
   if (
@@ -47,15 +49,18 @@ function HaierACBridge(log, config, api) {
     this.config.polling == null ||
     this.config.polling == ""
   ) {
-    throw new Error("You must provide polling in config");
+    this.log("You must provide polling in config");
+    return;
   }
 
   if (this.config.useFanMode != false && this.config.useFanMode != true) {
-    throw new Error("Incorrect useFanMode in config");
+    this.log("Incorrect useFanMode in config");
+    return;
   }
 
   if (this.config.useDryMode != false && this.config.useDryMode != true) {
-    throw new Error("Incorrect useDryMode in config");
+    this.log("Incorrect useDryMode in config");
+    return;
   }
 
   if (
@@ -63,7 +68,8 @@ function HaierACBridge(log, config, api) {
     this.config.healthModeType != "OFF" &&
     this.config.healthModeType != "FORCE"
   ) {
-    throw new Error("Incorrect healthModeType in config");
+    this.log("Incorrect healthModeType in config");
+    return;
   }
 
   if (
@@ -71,7 +77,8 @@ function HaierACBridge(log, config, api) {
     this.config.swingType != "OFF" &&
     this.config.swingType != "BOTH"
   ) {
-    throw new Error("Incorrect swingType in config");
+    this.log("Incorrect swingType in config");
+    return;
   }
 
   if (typeof this.config.lang == "undefined" || !this.config.lang) {
@@ -124,7 +131,8 @@ function HaierACBridge(log, config, api) {
 
   if (api) {
     if (api.version < 2.2) {
-      throw new Error("Unexpected API version. Please update your homebridge!");
+      this.log("Unexpected API version. Please update your homebridge!");
+      return;
     }
 
     this.acApi = new restApi.RestAPI(this);
