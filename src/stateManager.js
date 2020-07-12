@@ -177,7 +177,6 @@ class StateManager {
         return false;
       }
     }
-  }
 
   getCurrentHeatingCoolingState() {
     let currentTemperature = this.data.currentTemperature;
