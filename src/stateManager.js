@@ -171,14 +171,11 @@ class StateManager {
   }
 
   getIsOnline() {
-    if (this.data.online) {
       if (this.data.currentTemperature != 0) {
         return true;
       } else {
         return false;
       }
-    } else {
-      return false;
     }
   }
 
