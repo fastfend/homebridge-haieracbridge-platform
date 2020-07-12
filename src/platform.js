@@ -32,7 +32,7 @@ function HaierACBridge(log, config, api) {
     this.config.ip == null ||
     this.config.ip == ""
   ) {
-    this.log("You must provide IP from HaierACBridge Android app");
+    this.log.error("You must provide IP from HaierACBridge Android app");
     return;
   }
   if (
@@ -40,7 +40,7 @@ function HaierACBridge(log, config, api) {
     this.config.token == null ||
     this.config.token == ""
   ) {
-    this.log("You must provide token from HaierACBridge Android app");
+    this.log.error("You must provide token from HaierACBridge Android app");
     return;
   }
 
@@ -49,17 +49,17 @@ function HaierACBridge(log, config, api) {
     this.config.polling == null ||
     this.config.polling == ""
   ) {
-    this.log("You must provide polling in config");
+    this.log.error("You must provide polling in config");
     return;
   }
 
   if (this.config.useFanMode != false && this.config.useFanMode != true) {
-    this.log("Incorrect useFanMode in config");
+    this.log.error("Incorrect useFanMode in config");
     return;
   }
 
   if (this.config.useDryMode != false && this.config.useDryMode != true) {
-    this.log("Incorrect useDryMode in config");
+    this.log.error("Incorrect useDryMode in config");
     return;
   }
 
@@ -68,7 +68,7 @@ function HaierACBridge(log, config, api) {
     this.config.healthModeType != "OFF" &&
     this.config.healthModeType != "FORCE"
   ) {
-    this.log("Incorrect healthModeType in config");
+    this.log.error("Incorrect healthModeType in config");
     return;
   }
 
@@ -77,7 +77,7 @@ function HaierACBridge(log, config, api) {
     this.config.swingType != "OFF" &&
     this.config.swingType != "BOTH"
   ) {
-    this.log("Incorrect swingType in config");
+    this.log.error("Incorrect swingType in config");
     return;
   }
 
@@ -131,7 +131,7 @@ function HaierACBridge(log, config, api) {
 
   if (api) {
     if (api.version < 2.2) {
-      this.log("Unexpected API version. Please update your homebridge!");
+      this.log.error("Unexpected API version. Please update your homebridge!");
       return;
     }
 
