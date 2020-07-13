@@ -5,8 +5,8 @@
 <a href="https://www.npmjs.com/package/homebridge-haieracbridge-platform"><img title="npm downloads" src="https://badgen.net/npm/dt/homebridge-haieracbridge-platform" ></a>
 <a href="https://github.com/fastfend/HaierACBridge"><img title="made with" src="https://badgen.net/badge/made with/HaierACBridge/orange" ></a>
 <a href="https://github.com/homebridge/homebridge"><img title="made for" src="https://badgen.net/badge/plugin for/homebridge/purple" ></a>
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 <a href="https://github.com/fastfend/homebridge-haieracbridge-platform/blob/master/LICENSE"><img title="license" src="https://badgen.net/badge/license/GPL-3/blue" ></a>
-
 
 </span>
 
